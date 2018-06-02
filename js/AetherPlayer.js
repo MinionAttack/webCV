@@ -20,23 +20,21 @@
     debug: false, // [true|false] Show the debug information in the console.
   };
 
-  // IE11 now returns undefined again for window.chrome
-  // and new Opera 30 outputs true for window.chrome
-  // but needs to check if window.opr is not undefined
-  // and new IE Edge outputs to true now for window.chrome
-  // and if not iOS Chrome check
-  // so use the below updated condition
-  let isChromium = window.chrome;
-  let winNav = window.navigator;
-  let vendorName = winNav.vendor;
-  let isOpera = typeof window.opr !== "undefined";
-  let isIEedge = winNav.userAgent.indexOf("Edge") > -1;
-  let isIOSChrome = winNav.userAgent.match("CriOS");
-
   let audio, moveLength, _playstatus = 'pause', _playmode, _songindex = 0, preloadImg = [], internal, debug;
-  let context = new AudioContext(), closeAudioContext = false, playList = [];
+  let context, closeAudioContext = false, playList = [], pauseStatusFromPrepareToPlay = false;
+
+  browserDetection();
 
   playerInit();
+
+  function browserDetection() {
+    // https://github.com/lancedikson/bowser#device-flags
+    if (bowser.webkit || bowser.blink) { //Chrome based browser
+      config.autoPlay = false;
+    } else if (bowser.gecko || bowser.msedge) { // Firefox and MS Edge
+      config.autoPlay = true;
+    }
+  }
 
   //initialization process of the player
   function playerInit() {
@@ -186,6 +184,10 @@
     _playstatus = 'playing';
     $('#aetherplayer .fa-volume-up').id = 'twinkling';
     cdPlay();
+    if (pauseStatusFromPrepareToPlay) {
+      pauseStatusFromPrepareToPlay = false;
+      visualizer(audio);
+    }
     audio.play();
   }
 
@@ -237,17 +239,19 @@
 
   //do some preprocessing before playing a song
   function prepareToPlay() {
+    if (closeAudioContext && context !== undefined) { //MANDATORY RELEASE THE PREVIOUS RESOURCES TO AVOID OBJECT OVERLAPPING AND CPU-MEMORY USE
+      context.close();
+    }
+    context = new AudioContext();
     resourceLoad();
     moveLengthGet();
-    if (_playstatus === 'pause') return;
-    cdPlay();
-    if (closeAudioContext) { //MANDATORY RELEASE THE PREVIOUS RESOURCES TO AVOID OBJECT OVERLAPPING AND CPU-MEMORY USE
-      context.close();
-      context = new AudioContext();
+    if (_playstatus === 'pause') {
+      pauseStatusFromPrepareToPlay = true;
+      return;
     }
-    loadAudioElement(audio.src).then(
-      visualizer(audio)
-    );
+    cdPlay();
+    visualizer(audio);
+    musicPlay();
   }
 
   //move the title text
@@ -329,15 +333,6 @@
 
   //configure the play mode
   function playModeConfig() {
-    if (isIOSChrome) { // is Google Chrome on IOS
-      config.playMode = false;
-    } else if ((isChromium !== null) && (typeof isChromium !== "undefined") && (vendorName === "Google Inc.") &&
-      (isOpera === false) && (isIEedge === false)) { // is Google Chrome
-      config.playMode = false;
-    } else { // not Google Chrome
-      config.playMode = true;
-    }
-
     playModeApply(config.playMode);
   }
 
@@ -431,10 +426,9 @@
   }
 
   function visualizer(audio) {
-
+    closeAudioContext = true;
     let src = context.createMediaElementSource(audio);
     let analyser = context.createAnalyser();
-
     let canvas = document.getElementById("canvas");
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -474,7 +468,6 @@
       }
     }
 
-    musicPlay();
     renderFrame();
   }
 
