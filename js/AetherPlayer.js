@@ -411,20 +411,6 @@
     }
   }
 
-  /* Create an async function which returns a promise of a playable audio element. */
-  function loadAudioElement(url) {
-    return new Promise(function (resolve, reject) {
-      let audio = new Audio();
-      audio.addEventListener('canplay', function () {
-        /* Resolve the promise, passing through the element. */
-        resolve(audio);
-      });
-      /* Reject the promise on an error. */
-      audio.addEventListener('error', reject);
-      audio.src = url;
-    });
-  }
-
   function visualizer(audio) {
     closeAudioContext = true;
     let src = context.createMediaElementSource(audio);
