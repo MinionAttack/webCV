@@ -15,10 +15,23 @@
     dataStorage: 'file', // [file|database] The way to storage playlist. If you choose database, then you should declare and assign a JavaScript variable named aetherplayer_playList_database in script tag.
     position: 'leftbottom', // [lefttop|leftbottom|righttop|rightbottom] The position of audio player.
     fontFamily: 'microsoft yahei,arial,sans-serif', // [FONTFAMILY] The fonts of your text.
-    autoPlay: true, // [true|false] Start playing music immediately when the data is ready.
+    autoPlay: false, // [true|false] Start playing music immediately when the data is ready.
     playMode: 'order', // [order|repeat|random] The play mode by default.
     debug: false, // [true|false] Show the debug information in the console.
   };
+
+  // IE11 now returns undefined again for window.chrome
+  // and new Opera 30 outputs true for window.chrome
+  // but needs to check if window.opr is not undefined
+  // and new IE Edge outputs to true now for window.chrome
+  // and if not iOS Chrome check
+  // so use the below updated condition
+  let isChromium = window.chrome;
+  let winNav = window.navigator;
+  let vendorName = winNav.vendor;
+  let isOpera = typeof window.opr !== "undefined";
+  let isIEedge = winNav.userAgent.indexOf("Edge") > -1;
+  let isIOSChrome = winNav.userAgent.match("CriOS");
 
   let audio, moveLength, _playstatus = 'pause', _playmode, _songindex = 0, preloadImg = [], internal, debug;
   let context = new AudioContext(), closeAudioContext = false, playList = [];
@@ -316,6 +329,15 @@
 
   //configure the play mode
   function playModeConfig() {
+    if (isIOSChrome) { // is Google Chrome on IOS
+      config.playMode = false;
+    } else if ((isChromium !== null) && (typeof isChromium !== "undefined") && (vendorName === "Google Inc.") &&
+      (isOpera === false) && (isIEedge === false)) { // is Google Chrome
+      config.playMode = false;
+    } else { // not Google Chrome
+      config.playMode = true;
+    }
+
     playModeApply(config.playMode);
   }
 
@@ -409,7 +431,7 @@
   }
 
   function visualizer(audio) {
-    closeAudioContext = true; //MANDATORY RELEASE THE PREVIOUS RESOURCES TO AVOID OBJECT OVERLAPPING AND CPU-MEMORY USE
+
     let src = context.createMediaElementSource(audio);
     let analyser = context.createAnalyser();
 
