@@ -58,13 +58,22 @@
     }, true);
 
     audio.addEventListener('ended', function () {
-      musicNext();
+      if (bowser.webkit || bowser.blink || bowser.msedge) { //No full support of WebAudio API
+        context.close();
+        cdPause();
+      } else if (bowser.gecko) {
+        musicNext();
+      }
       if (debug) debugOutput('audio - ended:' + playList[_songindex].songName);
     });
 
     audio.addEventListener('error', function () {
       setTimeout(function () {
-        musicNext()
+        if (bowser.gecko) {
+          musicNext()
+        } else {
+          cdPause();
+        }
       }, 5000);
       if (debug) debugOutput('audio - error:' + playList[_songindex].songName);
     });
@@ -137,8 +146,10 @@
     };
 
     $('#aetherplayer #player-btn-play').addEventListener(eventType, playBtnFunc);
-    $('#aetherplayer #player-btn-backward').addEventListener(eventType, prevBtnFunc);
-    $('#aetherplayer #player-btn-forward').addEventListener(eventType, nextBtnFunc);
+    if (bowser.gecko) {
+      $('#aetherplayer #player-btn-backward').addEventListener(eventType, prevBtnFunc);
+      $('#aetherplayer #player-btn-forward').addEventListener(eventType, nextBtnFunc);
+    }
     $('#aetherplayer #player-btn-playmode').addEventListener(eventType, playModeBtnFunc);
     $('#aetherplayer .player-tiny').addEventListener(eventType, AlbumShowFunc);
     $('#aetherplayer .player-mask').addEventListener(eventType, AlbumHideFunc);
@@ -149,7 +160,6 @@
       this.className = this.className.replace('fadein', '');
     });
   }
-
 
   function $(node) {
     return document.querySelector(node);
@@ -165,9 +175,9 @@
       + '<span class="player-title-text" id="player-title-text"></span>'
       + '</div>'
       + '<div class="player-btn-playmode select-disable" id="player-btn-playmode"></div>'
-      + '<div class="player-btn-backward select-disable" id="player-btn-backward" ><i class="fa fa-step-backward fa-lg player-btn-shadow"></i></div>'
+      + '<div class="player-btn-backward select-disable" data-toggle="tooltip" data-placement="auto" title="Only supported on Firefox" id="player-btn-backward"> <i class="fa fa-step-backward fa-lg player-btn-shadow"></i></div>'
       + '<div class="player-btn-play select-disable" id="player-btn-play" ><i class="fa fa-play fa-lg player-btn-shadow"></i></div>'
-      + '<div class="player-btn-forward select-disable" id="player-btn-forward" ><i class="fa fa-step-forward fa-lg player-btn-shadow"></i></div>'
+      + '<div class="player-btn-forward select-disable" data-toggle="tooltip" data-placement="auto" title="Only supported on Firefox" id="player-btn-forward"> <i class="fa fa-step-forward fa-lg player-btn-shadow"></i></div>'
       + '</div>'
       + '<audio id="songs" crossorigin="anonymous" preload="none">The technique used in program is not supported by ancient browser.</audio>'
       + '<div class="player-tiny"><i class="fa fa-volume-up fa-large"></i></div>'
@@ -413,7 +423,19 @@
 
   function visualizer(audio) {
     closeAudioContext = true;
-    let src = context.createMediaElementSource(audio);
+    let src = undefined;
+    try {
+      src = context.createMediaElementSource(audio);
+    } catch (exception) {
+      if (!context.close) {
+        context.close();
+      }
+      cdPause();
+      if ((exception.code === 11) && (exception.name === 'InvalidStateError')) {
+        console.log('Please, use Firefox for a full experience with the music player.');
+      }
+      return;
+    }
     let analyser = context.createAnalyser();
     let canvas = document.getElementById("canvas");
     canvas.width = window.innerWidth;
