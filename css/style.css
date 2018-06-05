@@ -21,8 +21,8 @@ header,
 #canvas {
     position: fixed;
     left: 11%;
-    bottom: -151px;
-    height: 25%;
+    bottom: 0px;
+    height: 10%;
     width: 78%;
 }
 

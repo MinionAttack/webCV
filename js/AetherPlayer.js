@@ -439,7 +439,7 @@
     let analyser = context.createAnalyser();
     let canvas = document.getElementById("canvas");
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = 256;
     let ctx = canvas.getContext("2d");
 
     src.connect(analyser);
@@ -452,7 +452,7 @@
     let dataArray = new Uint8Array(bufferLength);
 
     let WIDTH = ctx.canvas.width;
-    let HEIGHT = 256;
+    let HEIGHT = ctx.canvas.height;
 
     let barWidth = (WIDTH / bufferLength) * 1.5;
     let barHeight;
