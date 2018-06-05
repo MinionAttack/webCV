@@ -458,8 +458,6 @@
     let barHeight;
     let x = 0;
 
-    let color = randomColor();
-
     function renderFrame() {
       requestAnimationFrame(renderFrame);
       x = 0;
@@ -469,7 +467,7 @@
       for (let i = 0; i < bufferLength; i++) {
         barHeight = dataArray[i];
 
-        ctx.fillStyle = color;
+        ctx.fillStyle = rainbow(x);
         ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
         x += barWidth + 1;
 
@@ -479,10 +477,29 @@
     renderFrame();
   }
 
-  function randomColor () {
-    let max = 0xffffff;
+  // https://krazydad.com/tutorials/makecolors.php
+  function rainbow(bar) {
+    let redPhase = 0;
+    let greenPhase = (2 * Math.PI) / 3;
+    let bluePhase = (4 * Math.PI) / 3;
+    let center = 128;
+    let width = 127;
+    let frequency = (Math.PI * 2) / 2048;
 
-    return '#' + Math.round(Math.random() * max).toString(16);
+    let red = Math.sin(frequency * bar + redPhase) * width + center;
+    let green = Math.sin(frequency * bar + greenPhase) * width + center;
+    let blue = Math.sin(frequency * bar + bluePhase) * width + center;
+
+    return RGB2Color(red, green, blue);
+  }
+
+  /**
+   * @return {string}
+   */
+  function RGB2Color(red, green, blue) {
+
+    return 'rgb(' + Math.round(red) + ',' + Math.round(green) + ',' + Math.round(blue) + ')';
+
   }
 
 })();
