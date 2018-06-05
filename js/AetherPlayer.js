@@ -452,7 +452,7 @@
     let dataArray = new Uint8Array(bufferLength);
 
     let WIDTH = ctx.canvas.width;
-    let HEIGHT = ctx.canvas.height;
+    let HEIGHT = 256;
 
     let barWidth = (WIDTH / bufferLength) * 1.5;
     let barHeight;
