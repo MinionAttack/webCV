@@ -175,9 +175,9 @@
       + '<span class="player-title-text" id="player-title-text"></span>'
       + '</div>'
       + '<div class="player-btn-playmode select-disable" id="player-btn-playmode"></div>'
-      + '<div class="player-btn-backward select-disable" data-toggle="tooltip" data-placement="auto" title="Only supported on Firefox" id="player-btn-backward"> <i class="fa fa-step-backward fa-lg player-btn-shadow"></i></div>'
+      + '<div class="player-btn-backward select-disable" data-toggle="tooltip" data-placement="auto" ' + showButtonPopup() + ' id="player-btn-backward"> <i class="fa fa-step-backward fa-lg player-btn-shadow"></i></div>'
       + '<div class="player-btn-play select-disable" id="player-btn-play" ><i class="fa fa-play fa-lg player-btn-shadow"></i></div>'
-      + '<div class="player-btn-forward select-disable" data-toggle="tooltip" data-placement="auto" title="Only supported on Firefox" id="player-btn-forward"> <i class="fa fa-step-forward fa-lg player-btn-shadow"></i></div>'
+      + '<div class="player-btn-forward select-disable" data-toggle="tooltip" data-placement="auto" ' + showButtonPopup() + ' id="player-btn-forward"> <i class="fa fa-step-forward fa-lg player-btn-shadow"></i></div>'
       + '</div>'
       + '<audio id="songs" crossorigin="anonymous" preload="none">The technique used in program is not supported by ancient browser.</audio>'
       + '<div class="player-tiny"><i class="fa fa-volume-up fa-large"></i></div>'
@@ -187,6 +187,14 @@
     newNode.id = "aetherplayer";
     document.body.appendChild(newNode);
     audio = $("#aetherplayer #songs");
+  }
+
+  function showButtonPopup() {
+    if (bowser.webkit || bowser.blink || bowser.msedge) { //Chrome based browser or MS Edge
+      return 'title="Only supported on Firefox"';
+    } else if (bowser.gecko) { // Firefox and MS Edge
+      return '';
+    }
   }
 
   //play the song
