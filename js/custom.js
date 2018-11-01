@@ -3,16 +3,22 @@ $('.carousel').carousel({
   interval: 3000
 });
 
-//Smooth anchor scroll - It's a paid feature of MDB so I use JS to do it
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    e.preventDefault();
+// Smooth anchor scroll - It's a paid feature of MDB so I use JS to do it
+// https://stackoverflow.com/questions/7717527/smooth-scrolling-when-clicking-an-anchor-link
+let anchorlinks = document.querySelectorAll('a[href*=\\#]:not([href$=\\#])');
 
-    document.querySelector(this.getAttribute('href')).scrollIntoView({
-      behavior: 'smooth'
+for (let item of anchorlinks) { // relitere
+  item.addEventListener('click', (e)=> {
+    let hashval = item.getAttribute('href');
+    let target = document.querySelector(hashval);
+    target.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
     });
-  });
-});
+    history.pushState(null, null, hashval);
+    e.preventDefault()
+  })
+}
 
 // Google Maps
 function showMap() {
