@@ -18,7 +18,7 @@ header,
 }
 
 /* Sound spectrum */
-#canvas {
+#soundSpectrum {
     position: fixed;
     left: 11%;
     bottom: 0px;
