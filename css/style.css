@@ -24,6 +24,7 @@ header,
     bottom: 0px;
     height: 10%;
     width: 78%;
+    z-index: 1;
 }
 
 @media (max-width: 768px) {
