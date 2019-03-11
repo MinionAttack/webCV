@@ -20,12 +20,10 @@
         debug: false, // [true|false] Show the debug information in the console.
     };
 
-    let audio, moveLength, _playstatus = 'pause', _playmode, _songindex = 0, preloadImg = [], internal, debug;
+    let audio, canvasContext, moveLength, _playstatus = 'pause', _playmode, _songindex = 0, preloadImg = [], internal, debug;
     let context, closeAudioContext = false, playList = [], showSpectrumFirstSongAfterLoad = false;
 
     browserDetection();
-
-    playerInit();
 
     function browserDetection() {
         // https://github.com/lancedikson/bowser#device-flags
@@ -38,6 +36,8 @@
         }
     }
 
+    playerInit();
+
     //initialization process of the player
     function playerInit() {
         playerAdd();
@@ -46,7 +46,44 @@
         configLoad();
         if (playList.length === 0) return;
         albumPreload();
+        loadCanvas();
         prepareToPlay();
+    }
+
+    function playerAdd() {
+        let html = '<div  class="player" id="player">'
+            + '<div class="player-disk i-circle" >'
+            + '<img class="player-disk-image fadein" id="player-disk-image">'
+            + '</div>'
+            + '<div class="player-disk-circle-big" ><div class="player-disk-circle-small"></div></div>'
+            + '<div class="player-title select-disable" id="player-title">'
+            + '<span class="player-title-text" id="player-title-text"></span>'
+            + '</div>'
+            + '<div class="player-btn-playmode select-disable" id="player-btn-playmode"></div>'
+            + '<div class="player-btn-backward select-disable" data-toggle="tooltip" data-placement="auto" ' + showButtonPopup() + ' id="player-btn-backward"> <i class="fa fa-step-backward fa-lg player-btn-shadow"></i></div>'
+            + '<div class="player-btn-play select-disable" id="player-btn-play" ><i class="fa fa-play fa-lg player-btn-shadow"></i></div>'
+            + '<div class="player-btn-forward select-disable" data-toggle="tooltip" data-placement="auto" ' + showButtonPopup() + ' id="player-btn-forward"> <i class="fa fa-step-forward fa-lg player-btn-shadow"></i></div>'
+            + '</div>'
+            + '<audio id="songs" crossorigin="anonymous" preload="none">The technique used in program is not supported by ancient browser.</audio>'
+            + '<div class="player-tiny"><i class="fa fa-volume-up fa-large"></i></div>'
+            + '<div class="player-mask" id="player-mask"></div>';
+        let newNode = document.createElement("div");
+        newNode.innerHTML = html;
+        newNode.id = "aetherplayer";
+        document.body.appendChild(newNode);
+        audio = $("#aetherplayer #songs");
+    }
+
+    function showButtonPopup() {
+        if (bowser.webkit || bowser.blink || bowser.msedge) { //Chrome based browser or MS Edge
+            return 'title="Only supported on Firefox"';
+        } else if (bowser.gecko) { // Firefox and MS Edge
+            return '';
+        }
+    }
+
+    function $(node) {
+        return document.querySelector(node);
     }
 
     function audioEventBind() {
@@ -88,6 +125,45 @@
             if (debug) debugOutput('audio - stalled:' + playList[_songindex].songName);
         });
 
+    }
+
+    function debugOutput(info) {
+        console.log("AetherPlayer : " + info);
+    }
+
+    //make the CD stop
+    function cdPause() {
+        $('#aetherplayer #player-btn-play').innerHTML = '<i class="fa fa-play fa-lg player-btn-shadow"></i>';
+        $('#aetherplayer .i-circle').style.animationPlayState = 'paused';
+        $('#aetherplayer .i-circle').style.webkitAnimationPlayState = 'paused';
+    }
+
+    //change to the next song
+    function musicNext() {
+        switch (_playmode) {
+            case 'order' :
+                ++_songindex;
+                if (_songindex > playList.length - 1) _songindex = 0;
+                break;
+            case 'repeat' :
+                break;
+            case 'random':
+                _songindex = randomIndexGet();
+                break;
+            default :
+                break;
+        }
+        $('#aetherplayer .player-disk-image').className = "player-disk-image fadein";
+        prepareToPlay();
+    }
+
+    //get the random index
+    function randomIndexGet() {
+        let randomIndex = _songindex;
+        while (randomIndex === _songindex) { //make sure to get the different index
+            randomIndex = Math.floor(Math.random() * playList.length);
+        }
+        return randomIndex;
     }
 
     function buttonEventBind() {
@@ -163,40 +239,19 @@
         });
     }
 
-    function $(node) {
-        return document.querySelector(node);
+    //move the title text
+    function titleMove() {
+        let nodeObj = $('#player-title-text');
+        if (moveLength <= 0) return;
+        let mLeft = 0 - nodeObj.offsetLeft;
+        if (mLeft >= moveLength) return;
+        mLeft += 1;
+        nodeObj.style.marginLeft = '-' + mLeft + 'px';
     }
 
-    function playerAdd() {
-        let html = '<div  class="player" id="player">'
-            + '<div class="player-disk i-circle" >'
-            + '<img class="player-disk-image fadein" id="player-disk-image">'
-            + '</div>'
-            + '<div class="player-disk-circle-big" ><div class="player-disk-circle-small"></div></div>'
-            + '<div class="player-title select-disable" id="player-title">'
-            + '<span class="player-title-text" id="player-title-text"></span>'
-            + '</div>'
-            + '<div class="player-btn-playmode select-disable" id="player-btn-playmode"></div>'
-            + '<div class="player-btn-backward select-disable" data-toggle="tooltip" data-placement="auto" ' + showButtonPopup() + ' id="player-btn-backward"> <i class="fa fa-step-backward fa-lg player-btn-shadow"></i></div>'
-            + '<div class="player-btn-play select-disable" id="player-btn-play" ><i class="fa fa-play fa-lg player-btn-shadow"></i></div>'
-            + '<div class="player-btn-forward select-disable" data-toggle="tooltip" data-placement="auto" ' + showButtonPopup() + ' id="player-btn-forward"> <i class="fa fa-step-forward fa-lg player-btn-shadow"></i></div>'
-            + '</div>'
-            + '<audio id="songs" crossorigin="anonymous" preload="none">The technique used in program is not supported by ancient browser.</audio>'
-            + '<div class="player-tiny"><i class="fa fa-volume-up fa-large"></i></div>'
-            + '<div class="player-mask" id="player-mask"></div>';
-        let newNode = document.createElement("div");
-        newNode.innerHTML = html;
-        newNode.id = "aetherplayer";
-        document.body.appendChild(newNode);
-        audio = $("#aetherplayer #songs");
-    }
-
-    function showButtonPopup() {
-        if (bowser.webkit || bowser.blink || bowser.msedge) { //Chrome based browser or MS Edge
-            return 'title="Only supported on Firefox"';
-        } else if (bowser.gecko) { // Firefox and MS Edge
-            return '';
-        }
+    //reset the position of title text
+    function titleReset() {
+        $('#aetherplayer #player-title-text').style.marginLeft = '0px';
     }
 
     //play the song
@@ -219,25 +274,6 @@
         audio.pause();
     }
 
-    //change to the next song
-    function musicNext() {
-        switch (_playmode) {
-            case 'order' :
-                ++_songindex;
-                if (_songindex > playList.length - 1) _songindex = 0;
-                break;
-            case 'repeat' :
-                break;
-            case 'random':
-                _songindex = randomIndexGet();
-                break;
-            default :
-                break;
-        }
-        $('#aetherplayer .player-disk-image').className = "player-disk-image fadein";
-        prepareToPlay();
-    }
-
     //change to the previous song
     function musicPrev() {
         switch (_playmode) {
@@ -257,68 +293,41 @@
         prepareToPlay();
     }
 
-    //do some preprocessing before playing a song
-    function prepareToPlay() {
-        resourceLoad();
-        moveLengthGet();
-        if (_playstatus === 'pause') {
-            showSpectrumFirstSongAfterLoad = true;
-            return;
+    //change the play mode of audio player
+    function playModeChange() {
+        let playModeArray = ['order', 'repeat', 'random'], playModeArray_index;
+        for (let i = 0; i < playModeArray.length; i++) {
+            if (playModeArray[i] === _playmode) {
+                playModeArray_index = i;
+                break;
+            }
         }
-        cdPlay();
-        visualizer(audio);
-        musicPlay();
+        ++playModeArray_index;
+        if (playModeArray_index > playModeArray.length - 1) playModeArray_index = 0;
+        playModeApply(playModeArray[playModeArray_index]);
     }
 
-    //move the title text
-    function titleMove() {
-        let nodeObj = $('#player-title-text');
-        if (moveLength <= 0) return;
-        let mLeft = 0 - nodeObj.offsetLeft;
-        if (mLeft >= moveLength) return;
-        mLeft += 1;
-        nodeObj.style.marginLeft = '-' + mLeft + 'px';
-    }
-
-    //get the move length of title text
-    function moveLengthGet() {
-        let titlewidth = $('#aetherplayer #player-title').offsetWidth;
-        let textwidth = $('#aetherplayer #player-title-text').offsetWidth;
-        return moveLength = textwidth - titlewidth;
-    }
-
-    //preload the album picture by order and set cache
-    function albumPreload(index) {
-        let imgIndex = arguments[0] ? arguments[0] : 0;
-        if (imgIndex >= playList.length) return;
-        preloadImg[imgIndex] = new Image();
-        preloadImg[imgIndex].src = playList[imgIndex].songCover;
-        preloadImg[imgIndex].onload = function () {
-            if (imgIndex === 0) $("#aetherplayer #player-disk-image").style.display = "block";
-            ++imgIndex;
-            albumPreload(imgIndex);
+    //apply the play mode
+    function playModeApply(playmode) {
+        switch (playmode) {
+            case 'order':
+                _playmode = 'order';
+                $('#aetherplayer #player-btn-playmode').innerHTML = '<i class="fa fa-sort-amount-asc fa-lg player-btn-shadow"></i>';
+                $('#aetherplayer #player-btn-playmode').title = "Order";
+                break;
+            case 'repeat':
+                _playmode = 'repeat';
+                $('#aetherplayer #player-btn-playmode').innerHTML = '<i class="fa fa-refresh fa-lg player-btn-shadow"></i>';
+                $('#aetherplayer #player-btn-playmode').title = "Repeat";
+                break;
+            case 'random':
+                _playmode = 'random';
+                $('#aetherplayer #player-btn-playmode').innerHTML = '<i class="fa fa-random fa-lg player-btn-shadow"></i>';
+                $('#aetherplayer #player-btn-playmode').title = "Random";
+                break;
+            default:
+                break;
         }
-    }
-
-    //load the src, album and title of the audio resource
-    function resourceLoad() {
-        audio.src = playList[_songindex].songURL;
-        $("#aetherplayer #player-disk-image").src = playList[_songindex].songCover;
-        $('#aetherplayer #player-title-text').innerHTML = playList[_songindex].songName + " - " + playList[_songindex].artist;
-    }
-
-    //make the CD turn
-    function cdPlay() {
-        $('#aetherplayer #player-btn-play').innerHTML = '<i class="fa fa-pause fa-lg player-btn-shadow"></i>';
-        $('#aetherplayer .i-circle').style.animationPlayState = 'running';
-        $('#aetherplayer .i-circle').style.webkitAnimationPlayState = 'running';
-    }
-
-    //make the CD stop
-    function cdPause() {
-        $('#aetherplayer #player-btn-play').innerHTML = '<i class="fa fa-play fa-lg player-btn-shadow"></i>';
-        $('#aetherplayer .i-circle').style.animationPlayState = 'paused';
-        $('#aetherplayer .i-circle').style.webkitAnimationPlayState = 'paused';
     }
 
     //load the configuration
@@ -358,61 +367,6 @@
         if (debug) debugOutput('debugging');
     }
 
-    function debugOutput(info) {
-        console.log("AetherPlayer : " + info);
-    }
-
-    //apply the play mode
-    function playModeApply(playmode) {
-        switch (playmode) {
-            case 'order':
-                _playmode = 'order';
-                $('#aetherplayer #player-btn-playmode').innerHTML = '<i class="fa fa-sort-amount-asc fa-lg player-btn-shadow"></i>';
-                $('#aetherplayer #player-btn-playmode').title = "Order";
-                break;
-            case 'repeat':
-                _playmode = 'repeat';
-                $('#aetherplayer #player-btn-playmode').innerHTML = '<i class="fa fa-refresh fa-lg player-btn-shadow"></i>';
-                $('#aetherplayer #player-btn-playmode').title = "Repeat";
-                break;
-            case 'random':
-                _playmode = 'random';
-                $('#aetherplayer #player-btn-playmode').innerHTML = '<i class="fa fa-random fa-lg player-btn-shadow"></i>';
-                $('#aetherplayer #player-btn-playmode').title = "Random";
-                break;
-            default:
-                break;
-        }
-    }
-
-    //change the play mode of audio player
-    function playModeChange() {
-        let playModeArray = ['order', 'repeat', 'random'], playModeArray_index;
-        for (let i = 0; i < playModeArray.length; i++) {
-            if (playModeArray[i] === _playmode) {
-                playModeArray_index = i;
-                break;
-            }
-        }
-        ++playModeArray_index;
-        if (playModeArray_index > playModeArray.length - 1) playModeArray_index = 0;
-        playModeApply(playModeArray[playModeArray_index]);
-    }
-
-    //reset the position of title text
-    function titleReset() {
-        $('#aetherplayer #player-title-text').style.marginLeft = '0px';
-    }
-
-    //get the random index
-    function randomIndexGet() {
-        let randomIndex = _songindex;
-        while (randomIndex === _songindex) { //make sure to get the different index
-            randomIndex = Math.floor(Math.random() * playList.length);
-        }
-        return randomIndex;
-    }
-
     //configure the way to storage data
     function dataStorageConfig() {
         switch (config.dataStorage) {
@@ -427,9 +381,64 @@
         }
     }
 
+    //preload the album picture by order and set cache
+    function albumPreload(index) {
+        let imgIndex = arguments[0] ? arguments[0] : 0;
+        if (imgIndex >= playList.length) return;
+        preloadImg[imgIndex] = new Image();
+        preloadImg[imgIndex].src = playList[imgIndex].songCover;
+        preloadImg[imgIndex].onload = function () {
+            if (imgIndex === 0) $("#aetherplayer #player-disk-image").style.display = "block";
+            ++imgIndex;
+            albumPreload(imgIndex);
+        }
+    }
+
+    function loadCanvas() {
+        let canvas = document.getElementById("soundSpectrum");
+        canvas.width = window.innerWidth;
+        canvas.height = 256;
+
+        canvasContext = canvas.getContext("2d");
+    }
+
+    //do some preprocessing before playing a song
+    function prepareToPlay() {
+        resourceLoad();
+        moveLengthGet();
+        if (_playstatus === 'pause') {
+            showSpectrumFirstSongAfterLoad = true;
+            return;
+        }
+        cdPlay();
+        visualizer(audio);
+        musicPlay();
+    }
+
+    //load the src, album and title of the audio resource
+    function resourceLoad() {
+        audio.src = playList[_songindex].songURL;
+        $("#aetherplayer #player-disk-image").src = playList[_songindex].songCover;
+        $('#aetherplayer #player-title-text').innerHTML = playList[_songindex].songName + " - " + playList[_songindex].artist;
+    }
+
+    //get the move length of title text
+    function moveLengthGet() {
+        let titlewidth = $('#aetherplayer #player-title').offsetWidth;
+        let textwidth = $('#aetherplayer #player-title-text').offsetWidth;
+        return moveLength = textwidth - titlewidth;
+    }
+
+    //make the CD turn
+    function cdPlay() {
+        $('#aetherplayer #player-btn-play').innerHTML = '<i class="fa fa-pause fa-lg player-btn-shadow"></i>';
+        $('#aetherplayer .i-circle').style.animationPlayState = 'running';
+        $('#aetherplayer .i-circle').style.webkitAnimationPlayState = 'running';
+    }
+
     function visualizer(audio) {
         closeAudioContext = true;
-        let src = undefined;
+        let src = null;
         try {
             if (closeAudioContext && context !== undefined) { //MANDATORY RELEASE THE PREVIOUS RESOURCES TO AVOID OBJECT OVERLAPPING AND CPU-MEMORY USE
                 context.close();
@@ -447,11 +456,6 @@
             return;
         }
         let analyser = context.createAnalyser();
-        let canvas = document.getElementById("soundSpectrum");
-        canvas.width = window.innerWidth;
-        canvas.height = 256;
-        let ctx = canvas.getContext("2d");
-
         src.connect(analyser);
         analyser.connect(context.destination);
 
@@ -461,8 +465,8 @@
 
         let dataArray = new Uint8Array(bufferLength);
 
-        let WIDTH = ctx.canvas.width;
-        let HEIGHT = ctx.canvas.height;
+        let WIDTH = canvasContext.canvas.width;
+        let HEIGHT = canvasContext.canvas.height;
 
         let barWidth = (WIDTH / bufferLength) * 1.5;
         let barHeight;
@@ -472,13 +476,13 @@
             requestAnimationFrame(renderFrame);
             x = 0;
             analyser.getByteFrequencyData(dataArray);
-            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+            canvasContext.clearRect(0, 0, WIDTH, HEIGHT);
 
             for (let i = 0; i < bufferLength; i++) {
                 barHeight = dataArray[i];
 
-                ctx.fillStyle = rainbow(x);
-                ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+                canvasContext.fillStyle = rainbow(x);
+                canvasContext.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
                 x += barWidth + 1;
 
             }
