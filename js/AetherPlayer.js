@@ -484,7 +484,6 @@
                 canvasContext.fillStyle = rainbow(x);
                 canvasContext.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
                 x += barWidth + 1;
-
             }
         }
 
