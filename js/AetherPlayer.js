@@ -87,7 +87,6 @@
     }
 
     function audioEventBind() {
-
         audio.addEventListener('playing', function () {
             if (debug) debugOutput('audio - playing:' + playList[_songindex].songName);
         }, true);
@@ -124,7 +123,6 @@
         audio.addEventListener('stalled', function () {
             if (debug) debugOutput('audio - stalled:' + playList[_songindex].songName);
         });
-
     }
 
     function debugOutput(info) {
@@ -167,7 +165,6 @@
     }
 
     function buttonEventBind() {
-
         let eventType = "", isSupportTouch = "ontouchend" in document;
 
         (isSupportTouch === true) ? eventType = "touchend" : eventType = "mousedown";
@@ -510,9 +507,6 @@
      * @return {string}
      */
     function RGB2Color(red, green, blue) {
-
         return 'rgb(' + Math.round(red) + ',' + Math.round(green) + ',' + Math.round(blue) + ')';
-
     }
-
 })();
