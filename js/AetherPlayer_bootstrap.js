@@ -8,9 +8,12 @@
 let aetherPlayerBoot = (function (path_bootstrap) {
 
   let path_to_docs = path_bootstrap.substring(0, path_bootstrap.indexOf('/js/'));
+  let css_folder = '/css/AetherPlayer.css';
+  let playlist = '/js/playlist.js';
+  let player = '/js/AetherPlayer.js';
+  let font_awesome_cdn = 'https://use.fontawesome.com/releases/v5.7.0/css/all.css';
 
-  filesLoad([path_to_docs + '/css/AetherPlayer.css', path_to_docs + '/js/playlist.js', path_to_docs + '/js/AetherPlayer.js',
-    'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css']);
+  filesLoad([path_to_docs + css_folder, path_to_docs + playlist, path_to_docs + player, font_awesome_cdn]);
 
   //load files by order in a synchronous manner
   function filesLoad(arr) {

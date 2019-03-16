@@ -43,19 +43,17 @@ function sendMail() {
   let email = document.getElementById('contactEmailInput').value;
   let subject = document.getElementById('contactSubjectInput').value;
   let text = document.getElementById('contactMessageInput').value;
-  let message = author + "wrote the following message: " + text;
+  let message = author + " wrote the following message:\n\n" + text;
 
   let validEmail = validateEmail(email);
 
-  if (validEmail) {
-    let link = "mailto:ialonsolonso@yahoo.es"
-      + "?cc=" + encodeURIComponent(email)
-      + "&subject=" + encodeURIComponent(subject)
-      + "&body=" + encodeURIComponent(message);
-
-    window.location.href = link;
-  } else {
+  if (!validEmail) {
     window.alert('Email not valid.');
+  } else {
+    window.location.href = "mailto:ialonsolonso@yahoo.es"
+                         + "?cc=" + encodeURIComponent(email)
+                         + "&subject=" + encodeURIComponent(subject)
+                         + "&body=" + encodeURIComponent(message);
   }
 }
 

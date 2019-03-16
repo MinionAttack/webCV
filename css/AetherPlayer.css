@@ -349,7 +349,7 @@
 }
 
 #aetherplayer .player-btn-shadow {
-    text-shadow: 0px 0px 2px #000;
+    text-shadow: 0 0 2px #000;
 }
 
 #aetherplayer .player-title {
@@ -361,7 +361,7 @@
     top: 22%;
     left: 20%;
     color: #fff;
-    text-shadow: 0px 0px 2px #000;
+    text-shadow: 0 0 2px #000;
     overflow: hidden;
     cursor: default;
     text-align: center;

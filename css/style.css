@@ -17,11 +17,31 @@ header,
     background-color: #24355C;
 }
 
+.intro-text {
+    display: inline-grid;
+    line-height: 1.5em;
+    margin-top: 0 !important;
+}
+
+.pencil-paper {
+    display: block !important;
+}
+
+.paper-text {
+    display: inline-grid;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.custom-textarea {
+    padding: 0 !important;
+}
+
 /* Sound spectrum */
 #soundSpectrum {
     position: fixed;
     left: 11%;
-    bottom: 0px;
+    bottom: 0;
     height: 10%;
     width: 78%;
     z-index: 1;
