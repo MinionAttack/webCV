@@ -19,8 +19,12 @@ let aetherPlayerBoot = (function (path_bootstrap) {
   function filesLoad(arr) {
     let type_arr = arr[0].split('.');
     let type = type_arr[type_arr.length - 1];
-    if (type === "css") var dom = cssDomCreate(arr[0]);
-    else if (type === "js") var dom = jsDomCreate(arr[0]);
+    let dom;
+    if (type === "css") {
+      dom = cssDomCreate(arr[0]);
+    } else if (type === "js") {
+      dom = jsDomCreate(arr[0]);
+    }
     if (arr.length === 1) return;
     dom.onload = function () {
       arr.splice(0, 1);

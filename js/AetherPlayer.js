@@ -21,7 +21,7 @@
     };
 
     let audio, canvasContext, moveLength, _playstatus = 'pause', _playmode, _songindex = 0, preloadImg = [], internal, debug;
-    let context, closeAudioContext = false, playList = [], showSpectrumFirstSongAfterLoad = false;
+    let context, closeAudioContext = false, playList = [], showSpectrumFirstSongAfterLoad = false, showAlertFirstTime = true;
 
     browserDetection();
 
@@ -61,7 +61,7 @@
             + '</div>'
             + '<div class="player-btn-playmode select-disable" id="player-btn-playmode"></div>'
             + '<div class="player-btn-backward select-disable" data-toggle="tooltip" data-placement="auto" ' + showButtonPopup() + ' id="player-btn-backward"> <i class="fa fa-step-backward fa-lg player-btn-shadow"></i></div>'
-            + '<div class="player-btn-play select-disable" id="player-btn-play" ><i class="fa fa-play fa-lg player-btn-shadow"></i></div>'
+            + '<div class="player-btn-play select-disable" data-toggle="tooltip" data-placement="auto"' + showUserAdvice() + ' id="player-btn-play" ><i class="fa fa-play fa-lg player-btn-shadow"></i></div>'
             + '<div class="player-btn-forward select-disable" data-toggle="tooltip" data-placement="auto" ' + showButtonPopup() + ' id="player-btn-forward"> <i class="fa fa-step-forward fa-lg player-btn-shadow"></i></div>'
             + '</div>'
             + '<audio id="songs" crossorigin="anonymous" preload="none">The technique used in program is not supported by ancient browser.</audio>'
@@ -74,10 +74,16 @@
         audio = $("#aetherplayer #songs");
     }
 
+    function showUserAdvice() {
+        if (bowser.gecko) {
+            return 'title="With Firefox 66 release and the \'autoplay\' new policy I\'m having problems with the audio. Please open the links with the \'middle mouse button\' or \'Ctrl+Click\' while music it\'s on to not crash the audio and the sound analyzer animation until you select another song. I\'m looking for a solution, sorry for any inconvenience."';
+        }
+    }
+
     function showButtonPopup() {
         if (bowser.webkit || bowser.blink || bowser.msedge) { //Chrome based browser or MS Edge
             return 'title="Only supported on Firefox"';
-        } else if (bowser.gecko) { // Firefox and MS Edge
+        } else if (bowser.gecko) { // Firefox
             return '';
         }
     }
