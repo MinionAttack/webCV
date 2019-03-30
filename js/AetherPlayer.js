@@ -21,7 +21,7 @@
     };
 
     let audio, canvasContext, moveLength, _playstatus = 'pause', _playmode, _songindex = 0, preloadImg = [], internal, debug;
-    let context, closeAudioContext = false, playList = [], showSpectrumFirstSongAfterLoad = false, showAlertFirstTime = true;
+    let context, closeAudioContext = false, playList = [], showSpectrumFirstSongAfterLoad = false;
 
     browserDetection();
 
