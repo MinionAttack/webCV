@@ -61,7 +61,7 @@
             + '</div>'
             + '<div class="player-btn-playmode select-disable" id="player-btn-playmode"></div>'
             + '<div class="player-btn-backward select-disable" data-toggle="tooltip" data-placement="auto" ' + showButtonPopup() + ' id="player-btn-backward"> <i class="fa fa-step-backward fa-lg player-btn-shadow"></i></div>'
-            + '<div class="player-btn-play select-disable" data-toggle="tooltip" data-placement="auto"' + showUserAdvice() + ' id="player-btn-play" ><i class="fa fa-play fa-lg player-btn-shadow"></i></div>'
+            + '<div class="player-btn-play select-disable" data-toggle="tooltip" data-placement="auto" id="player-btn-play" ><i class="fa fa-play fa-lg player-btn-shadow"></i></div>'
             + '<div class="player-btn-forward select-disable" data-toggle="tooltip" data-placement="auto" ' + showButtonPopup() + ' id="player-btn-forward"> <i class="fa fa-step-forward fa-lg player-btn-shadow"></i></div>'
             + '</div>'
             + '<audio id="songs" crossorigin="anonymous" preload="none">The technique used in program is not supported by ancient browser.</audio>'
@@ -72,12 +72,6 @@
         newNode.id = "aetherplayer";
         document.body.appendChild(newNode);
         audio = $("#aetherplayer #songs");
-    }
-
-    function showUserAdvice() {
-        if (bowser.gecko) {
-            return 'title="With Firefox 66 release and the \'autoplay\' new policy I\'m having problems with the audio. Please open the links with the \'middle mouse button\' or \'Ctrl+Click\' while music it\'s on to not crash the audio and the sound analyzer animation until you select another song. I\'m looking for a solution, sorry for any inconvenience."';
-        }
     }
 
     function showButtonPopup() {
@@ -95,6 +89,15 @@
     function audioEventBind() {
         audio.addEventListener('playing', function () {
             if (debug) debugOutput('audio - playing:' + playList[_songindex].songName);
+            let focused = true;
+            document.addEventListener('visibilitychange', function () {
+                focused = !focused;
+                if (!focused) {
+                    musicPause();
+                } else {
+                    musicPlay();
+                }
+            });
         }, true);
 
         audio.addEventListener('pause', function () {
@@ -116,7 +119,7 @@
                 if (bowser.gecko) {
                     musicNext()
                 } else {
-                    cdPause();
+                    musicPause();
                 }
             }, 5000);
             if (debug) debugOutput('audio - error:' + playList[_songindex].songName);
