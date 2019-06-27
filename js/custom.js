@@ -36,29 +36,3 @@ function showMap() {
     }
   });
 }
-
-// Contact Form
-function sendMail() {
-  let author = document.getElementById('contactNameInput').value;
-  let email = document.getElementById('contactEmailInput').value;
-  let subject = document.getElementById('contactSubjectInput').value;
-  let text = document.getElementById('contactMessageInput').value;
-  let message = author + " wrote the following message:\n\n" + text;
-
-  let validEmail = validateEmail(email);
-
-  if (!validEmail) {
-    window.alert('Email not valid.');
-  } else {
-    window.location.href = "mailto:ialonsolonso@yahoo.es"
-                         + "?cc=" + encodeURIComponent(email)
-                         + "&subject=" + encodeURIComponent(subject)
-                         + "&body=" + encodeURIComponent(message);
-  }
-}
-
-function validateEmail(email) {
-  let regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/g;
-
-  return regex.test(email);
-}
