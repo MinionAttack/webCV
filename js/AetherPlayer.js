@@ -318,12 +318,12 @@
         switch (playmode) {
             case 'order':
                 _playmode = 'order';
-                $('#aetherplayer #player-btn-playmode').innerHTML = '<i class="fa fa-sort-amount-asc fa-lg player-btn-shadow"></i>';
+                $('#aetherplayer #player-btn-playmode').innerHTML = '<i class="fa fa-sort-amount-down-alt fa-lg player-btn-shadow"></i>';
                 $('#aetherplayer #player-btn-playmode').title = "Order";
                 break;
             case 'repeat':
                 _playmode = 'repeat';
-                $('#aetherplayer #player-btn-playmode').innerHTML = '<i class="fa fa-refresh fa-lg player-btn-shadow"></i>';
+                $('#aetherplayer #player-btn-playmode').innerHTML = '<i class="fa fa-retweet fa-lg player-btn-shadow"></i>';
                 $('#aetherplayer #player-btn-playmode').title = "Repeat";
                 break;
             case 'random':
