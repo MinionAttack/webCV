@@ -415,26 +415,28 @@
     }
 
     // device type extraction
-    var osMajorVersion = !result.windows && osVersion !== null && osVersion !== undefined && osVersion.split('.')[0];
-    if (
-         tablet
-      || nexusTablet
-      || iosdevice == 'ipad'
-      || (android && (osMajorVersion == 3 || (osMajorVersion >= 4 && !mobile)))
-      || result.silk
-    ) {
-      result.tablet = t
-    } else if (
-         mobile
-      || iosdevice == 'iphone'
-      || iosdevice == 'ipod'
-      || android
-      || nexusMobile
-      || result.blackberry
-      || result.webos
-      || result.bada
-    ) {
-      result.mobile = t
+    if ((osVersion !== null) && (osVersion !== undefined)) {
+        var osMajorVersion = !result.windows && osVersion.split('.')[0];
+        if (
+            tablet
+        || nexusTablet
+        || iosdevice == 'ipad'
+        || (android && (osMajorVersion == 3 || (osMajorVersion >= 4 && !mobile)))
+        || result.silk
+        ) {
+        result.tablet = t
+        } else if (
+            mobile
+        || iosdevice == 'iphone'
+        || iosdevice == 'ipod'
+        || android
+        || nexusMobile
+        || result.blackberry
+        || result.webos
+        || result.bada
+        ) {
+        result.mobile = t
+        }
     }
 
     // Graded Browser Support
