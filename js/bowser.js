@@ -415,7 +415,7 @@
     }
 
     // device type extraction
-    var osMajorVersion = !result.windows && osVersion.split('.')[0];
+    var osMajorVersion = !result.windows && osVersion !== null && osVersion !== undefined && osVersion.split('.')[0];
     if (
          tablet
       || nexusTablet
