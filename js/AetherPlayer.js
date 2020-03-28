@@ -20,7 +20,7 @@
         debug: false, // [true|false] Show the debug information in the console.
     };
 
-    let audio, canvasContext, moveLength, _playstatus = 'pause', _playmode, _songindex = 0, preloadImg = [], internal, debug;
+    let audio, canvasContext, moveLength, _playstatus = 'pause', _playmode, _songindex = 0, internal, debug;
     let context, closeAudioContext = false, playList = [], showSpectrumFirstSongAfterLoad = false;
 
     browserDetection();
@@ -164,7 +164,8 @@
         prepareToPlay();
     }
 
-    //get the random index
+    //get the random indexnsole
+
     function randomIndexGet() {
         let randomIndex = _songindex;
         while (randomIndex === _songindex) { //make sure to get the different index
@@ -390,6 +391,7 @@
     //preload the album picture by order and set cache
     function albumPreload(index) {
         let imgIndex = arguments[0] ? arguments[0] : 0;
+        let preloadImg = [];
         if (imgIndex >= playList.length) return;
         preloadImg[imgIndex] = new Image();
         preloadImg[imgIndex].src = playList[imgIndex].songCover;

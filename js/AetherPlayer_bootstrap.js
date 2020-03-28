@@ -26,9 +26,11 @@ let aetherPlayerBoot = (function (path_bootstrap) {
       dom = jsDomCreate(arr[0]);
     }
     if (arr.length === 1) return;
-    dom.onload = function () {
-      arr.splice(0, 1);
-      filesLoad(arr);
+    if ((dom !== null) && (dom !== undefined)) {
+        dom.onload = function () {
+            arr.splice(0, 1);
+            filesLoad(arr);
+        }
     }
   }
 
