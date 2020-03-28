@@ -444,7 +444,7 @@
         $('#aetherplayer .i-circle').style.webkitAnimationPlayState = 'running';
     }
 
-    function visualizer(audio) {
+    function visualizer(audio_source) {
         closeAudioContext = true;
         let src = null;
         try {
@@ -452,7 +452,7 @@
                 context.close();
             }
             context = new AudioContext();
-            src = context.createMediaElementSource(audio);
+            src = context.createMediaElementSource(audio_source);
         } catch (exception) {
             if (!context.close) {
                 context.close();
