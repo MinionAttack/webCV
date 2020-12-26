@@ -46,10 +46,25 @@ let sixthSong = {
 };
 
 let seventhSong = {
-  'artist': 'Daniel KIm',
+  'artist': 'Daniel Kim',
   'songName': 'Pop Danthology 2015 (Part 2)',
   'songURL': '',
   'songCover': ''
 };
 
-let aetherplayer_playList_file = [firstSong, secondSong, thirdSong, fourthSong, fifthSong, sixthSong, seventhSong];
+let eighthSong = {
+  'artist': 'Daniel Kim',
+  'songName': 'Pop Danthology 2010s',
+  'songURL': '',
+  'songCover': ''
+};
+
+let ninthSong = {
+  'artist': 'Adam Wright (Adamusic)',
+  'songName': 'STUCK IN 2020 | A Year-End Megamix (Mashup)',
+  'songURL': '',
+  'songCover': ''
+};
+
+let aetherplayer_playList_file = [firstSong, secondSong, thirdSong, fourthSong, fifthSong, sixthSong, seventhSong,
+                                  eighthSong, ninthSong];
