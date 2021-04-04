@@ -164,8 +164,6 @@
         prepareToPlay();
     }
 
-    //get the random indexnsole
-
     function randomIndexGet() {
         let randomIndex = _songindex;
         while (randomIndex === _songindex) { //make sure to get the different index
